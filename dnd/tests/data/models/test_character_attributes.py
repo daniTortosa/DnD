@@ -98,3 +98,25 @@ class TestCharacterAttributesValidator(TestCharacterAttributes):
             )
 
         assert str(error.value) == f"{lowest_param.capitalize()} value too low (2)"
+
+
+class TestCreateCharacterAttributesFromDict(TestCharacterAttributes):
+
+    def test_create_character_attributes_from_dict_returns_valid_object(self):
+        attributes_dict = self._attributes_dict
+        character_attributes = character_attributes_model.CharacterAttributes.from_dict(attributes=attributes_dict)
+
+        assert all([
+            attributes_dict["charisma"] == character_attributes.charisma,
+            attributes_dict["constitution"] == character_attributes.constitution,
+            attributes_dict["dexterity"] == character_attributes.dexterity,
+            attributes_dict["intelligence"] == character_attributes.intelligence,
+            attributes_dict["strength"] == character_attributes.strength,
+            attributes_dict["wisdom"] == character_attributes.wisdom,
+        ])
+
+    def test_create_character_attributes_from_dict_fails_with_invalid_dict(self):
+        with pytest.raises(character_attributes_model.UnableToCreateCharacterAttributes) as error:
+            character_attributes_model.CharacterAttributes.from_dict(attributes={})
+
+        assert str(error.value) == "Attributes amount not valid"

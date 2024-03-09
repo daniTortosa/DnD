@@ -1,7 +1,12 @@
 import dataclasses
+from typing import Self
 
 
 class ValidationError(Exception):
+    ...
+
+
+class UnableToCreateCharacterAttributes(Exception):
     ...
 
 
@@ -17,13 +22,13 @@ class CharacterAttributes:
     ]
 
     def __init__(
-        self,
-        strength: int,
-        dexterity: int,
-        constitution: int,
-        intelligence: int,
-        wisdom: int,
-        charisma: int
+            self,
+            strength: int,
+            dexterity: int,
+            constitution: int,
+            intelligence: int,
+            wisdom: int,
+            charisma: int
     ):
         self.strength: int = strength
         self.dexterity: int = dexterity
@@ -32,6 +37,16 @@ class CharacterAttributes:
         self.wisdom: int = wisdom
         self.charisma: int = charisma
 
+    @classmethod
+    def from_dict(cls, attributes: dict[str, int]) -> Self:
+        try:
+            cls.validate_attributes_dict(attributes)
+        except ValidationError as error:
+            raise UnableToCreateCharacterAttributes(error)
+
+        return CharacterAttributes(
+            **attributes
+        )
 
     @classmethod
     def validate_attributes_dict(cls, attributes_dict: dict[str, int]) -> bool:
